@@ -1,4 +1,6 @@
-package core.components
+package core.edges
+
+import core.vertex.Vertex
 
 
 trait EdgeSkelet[+I, +E, +O]
@@ -8,7 +10,7 @@ object EdgeSkelet {
   // types
   trait EdgeSkeletType
 
-  trait EdgeSkelet1Type[+T, +E] extends EdgeSkelet[T, E, T] with EdgeSkeletType
+  trait EdgeSkelet1Type[+V, +E] extends EdgeSkelet[V, E, V] with EdgeSkeletType
 
   trait EdgeSkelet2Type[+I, +E, +O] extends EdgeSkelet[I, E, O] with EdgeSkeletType
 
@@ -21,10 +23,18 @@ object EdgeSkelet {
     override def isMulti: Boolean = true
 
     def edges: Seq[NonMultiEdgeSkelet[I, E, O]]
+
+    def inVertices[R >: I]: Set[Vertex[R]] = edges.map(x => Vertex(x.inVertex)).toSet
+
+    def outVertices[R >: O]: Set[Vertex[R]] = edges.map(x => Vertex(x.outVertex)).toSet
   }
 
   trait NonMultiEdgeSkelet[+I, +E, +O] extends EdgeSkelet[I, E, O] with MultiableEdgeSkelet {
     override def isMulti: Boolean = false
+
+    def inVertex: I
+
+    def outVertex: O
   }
 
   // direct

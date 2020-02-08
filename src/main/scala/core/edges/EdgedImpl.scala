@@ -1,19 +1,19 @@
-package core.components
+package core.edges
 
 
-import core.components.Edge._
-import core.components.TimeProcess.InvariantTimeProcess
+import core.edges.Edge._
+import core.edges.TimeProcess.InvariantTimeProcess
 
 
 object EdgedImpl {
 
-  case class DirectEdge[+T, +E](inVertex: T, outVertex: T, valueEdge: E = Unit) extends DirectEdgeTrait[T, E] with InvariantTimeProcess
+  case class DirectEdge[+V, +E](inVertex: V, outVertex: V, valueEdge: E = Unit) extends DirectEdgeTrait[V, E] with InvariantTimeProcess
 
-  case class SimpleEdge[+T, +E](inVertex: T, outVertex: T, valueEdge: E = Unit) extends SimpleEdgeTrait[T, E] with InvariantTimeProcess
+  case class SimpleEdge[+V, +E](inVertex: V, outVertex: V, valueEdge: E = Unit) extends SimpleEdgeTrait[V, E] with InvariantTimeProcess
 
-  case class DirectMultiEdge[+T, +E](edges: Seq[DirectEdge[T, E]]) extends DirectMultiEdgeTrait[T, E] with InvariantTimeProcess
+  case class DirectMultiEdge[+V, +E](edges: Seq[DirectEdge[V, E]]) extends DirectMultiEdgeTrait[V, E] with InvariantTimeProcess
 
-  case class MultiEdge[+T, +E](edges: Seq[SimpleEdge[T, E]]) extends MultiEdgeTrait[T, E] with InvariantTimeProcess
+  case class MultiEdge[+V, +E](edges: Seq[SimpleEdge[V, E]]) extends MultiEdgeTrait[V, E] with InvariantTimeProcess
 
   case class DirectEdge2Type[+I, +E, +O](inVertex: I, outVertex: O, valueEdge: E = Unit) extends DirectEdge2TypeTrait[I, E, O] with InvariantTimeProcess
 
