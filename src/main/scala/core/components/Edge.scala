@@ -1,35 +1,35 @@
 package core.components
 
-import core.components.EdgeSkelet.{DirectEdgeSkelet, DirectableEdgeSkelet, EdgeSkeletType, MultiEdgeSkelet, MultiableEdgeSkelet, NonDirectEdgeSkelet, NonMultiEdgeSkelet}
+import core.components.EdgeSkelet.{DirectEdgeSkelet, DirectableEdgeSkelet, EdgeSkelet1Type, EdgeSkelet2Type, EdgeSkeletType, MultiEdgeSkelet, MultiableEdgeSkelet, NonDirectEdgeSkelet, NonMultiEdgeSkelet}
 
-sealed trait Edge[+I, +O]
-  extends EdgeSkelet[I, O, _, _]
+sealed trait Edge[+I, +E, +O]
+  extends EdgeSkelet[I, E, O]
     with EdgeSkeletType
     with MultiableEdgeSkelet
     with DirectableEdgeSkelet
-    with TimeProcess[_]
+    with TimeProcess[Any]
 
 object Edge {
 
-  trait Edge1Type[+T] extends Edge[T, T]
+  trait Edge1Type[+T, +E] extends EdgeSkelet1Type[T, E]
 
-  trait Edge2Type[+I, +O] extends Edge[I, O]
+  trait Edge2Type[+I, +E, +O] extends EdgeSkelet2Type[I, E, O]
 
 
-  trait DirectEdgeTrait[+T] extends Edge1Type[T] with NonMultiEdgeSkelet[T, T] with DirectEdgeSkelet[T, T]
+  trait DirectEdgeTrait[+T, +E] extends Edge1Type[T, E] with NonMultiEdgeSkelet[T, E, T] with DirectEdgeSkelet[T, E, T]
 
-  trait EdgeSimpleTrait[+T] extends Edge1Type[T] with NonMultiEdgeSkelet[T, T] with NonDirectEdgeSkelet[T, T]
+  trait SimpleEdgeTrait[+T, +E] extends Edge1Type[T, E] with NonMultiEdgeSkelet[T, E, T] with NonDirectEdgeSkelet[T, E, T]
 
-  trait DirectMultiEdgeTrait[+T] extends Edge1Type[T] with MultiEdgeSkelet[T, T] with DirectEdgeSkelet[T, T]
+  trait DirectMultiEdgeTrait[+T, +E] extends Edge1Type[T, E] with MultiEdgeSkelet[T, E, T] with DirectEdgeSkelet[T, E, T]
 
-  trait MultiEdgeTrait[+T] extends Edge1Type[T] with MultiEdgeSkelet[T, T] with NonDirectEdgeSkelet[T, T]
+  trait MultiEdgeTrait[+T, +E] extends Edge1Type[T, E] with MultiEdgeSkelet[T, E, T] with NonDirectEdgeSkelet[T, E, T]
 
-  trait DirectEdge2TypeTrait[+I, +O] extends Edge2Type[I, O] with NonMultiEdgeSkelet[I, O] with DirectEdgeSkelet[I, O]
+  trait DirectEdge2TypeTrait[+I, +E, +O] extends Edge2Type[I, E, O] with NonMultiEdgeSkelet[I, E, O] with DirectEdgeSkelet[I, E, O]
 
-  trait EdgeSimple2TypeTrait[+I, +O] extends Edge2Type[I, O] with NonMultiEdgeSkelet[I, O] with NonDirectEdgeSkelet[I, O]
+  trait EdgeSimpleEdge2TypeTrait[+I, +E, +O] extends Edge2Type[I, E, O] with NonMultiEdgeSkelet[I, E, O] with NonDirectEdgeSkelet[I, E, O]
 
-  trait DirectMulti2TypeTrait[+I, +O] extends Edge2Type[I, O] with MultiEdgeSkelet[I, O] with DirectEdgeSkelet[I, O]
+  trait DirectMultiEdge2TypeTrait[+I, +E, +O] extends Edge2Type[I, E, O] with MultiEdgeSkelet[I, E, O] with DirectEdgeSkelet[I, E, O]
 
-  trait MultiEdge2TypeTrait[+I, +O] extends Edge2Type[I, O] with MultiEdgeSkelet[I, O] with NonDirectEdgeSkelet[I, O]
+  trait MultiEdge2TypeTrait[+I, +E, +O] extends Edge2Type[I, E, O] with MultiEdgeSkelet[I, E, O] with NonDirectEdgeSkelet[I, E, O]
 
 }

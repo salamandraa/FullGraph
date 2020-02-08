@@ -1,20 +1,20 @@
 package core.components
 
-trait TimeProcess[T] {
+trait TimeProcess[+T] {
   def isForward: Option[Boolean]
 }
 
 object TimeProcess {
 
-  case object InvariantProcess extends TimeProcess[Any] {
+  trait InvariantTimeProcess extends TimeProcess[Any] {
     override def isForward: Option[Boolean] = None
   }
 
-  case object ForwardProcess extends TimeProcess[Any] {
+  trait ForwardTimeProcess extends TimeProcess[Any] {
     override def isForward: Option[Boolean] = Some(true)
   }
 
-  case object RevertProcess extends TimeProcess[Any] {
+  trait RevertTimeProcess extends TimeProcess[Any] {
     override def isForward: Option[Boolean] = Some(false)
   }
 

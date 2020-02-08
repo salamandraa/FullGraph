@@ -1,41 +1,29 @@
 package core.components
 
-import scala.util.Try
 
-
-abstract class EdgeSkelet[_[_, _] : PairVertex[I, O], +I, +O] {
-  def validate: Try[Unit]
-
-  protected def valueVin: Vertex[I]
-
-  protected def valueVout: Vertex[O]
-
-  def valueIn: I = valueVin.value
-
-  def valueOut: O = valueVout.value
-}
+trait EdgeSkelet[+I, +E, +O]
 
 object EdgeSkelet {
 
   // types
   trait EdgeSkeletType
 
-  trait EdgeSkelet1Type[+T] extends EdgeSkelet[T, T, _, _] with EdgeSkeletType
+  trait EdgeSkelet1Type[+T, +E] extends EdgeSkelet[T, E, T] with EdgeSkeletType
 
-  trait EdgeSkelet2Type[+I, +O] extends EdgeSkelet[I, O, _, _] with EdgeSkeletType
+  trait EdgeSkelet2Type[+I, +E, +O] extends EdgeSkelet[I, E, O] with EdgeSkeletType
 
   // multi
   trait MultiableEdgeSkelet {
     def isMulti: Boolean
   }
 
-  trait MultiEdgeSkelet[+I, +O] extends EdgeSkelet[I, O, _, _] with MultiableEdgeSkelet {
+  trait MultiEdgeSkelet[+I, +E, +O] extends EdgeSkelet[I, E, O] with MultiableEdgeSkelet {
     override def isMulti: Boolean = true
 
-    def values: List[NonMultiEdgeSkelet[I, O]]
+    def edges: Seq[NonMultiEdgeSkelet[I, E, O]]
   }
 
-  trait NonMultiEdgeSkelet[+I, +O] extends EdgeSkelet[I, O, _, _] with MultiableEdgeSkelet {
+  trait NonMultiEdgeSkelet[+I, +E, +O] extends EdgeSkelet[I, E, O] with MultiableEdgeSkelet {
     override def isMulti: Boolean = false
   }
 
@@ -44,11 +32,11 @@ object EdgeSkelet {
     def isDirect: Boolean
   }
 
-  trait DirectEdgeSkelet[+I, +O] extends EdgeSkelet[I, O, _, _] with DirectableEdgeSkelet {
+  trait DirectEdgeSkelet[+I, +E, +O] extends EdgeSkelet[I, E, O] with DirectableEdgeSkelet {
     override def isDirect: Boolean = true
   }
 
-  trait NonDirectEdgeSkelet[+I, +O] extends EdgeSkelet[I, O, _, _] with DirectableEdgeSkelet {
+  trait NonDirectEdgeSkelet[+I, +E, +O] extends EdgeSkelet[I, E, O] with DirectableEdgeSkelet {
     override def isDirect: Boolean = false
   }
 
