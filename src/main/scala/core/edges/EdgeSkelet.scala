@@ -7,13 +7,6 @@ trait EdgeSkelet[+I, +E, +O]
 
 object EdgeSkelet {
 
-  // types
-  trait EdgeSkeletType
-
-  trait EdgeSkelet1Type[+V, +E] extends EdgeSkelet[V, E, V] with EdgeSkeletType
-
-  trait EdgeSkelet2Type[+I, +E, +O] extends EdgeSkelet[I, E, O] with EdgeSkeletType
-
   // multi
   trait MultiableEdgeSkelet {
     def isMulti: Boolean

@@ -1,11 +1,10 @@
 package core.edges
 
-import core.edges.EdgeSkelet.{DirectEdgeSkelet, DirectableEdgeSkelet, EdgeSkelet1Type, EdgeSkelet2Type, EdgeSkeletType, MultiEdgeSkelet, MultiableEdgeSkelet, NonDirectEdgeSkelet, NonMultiEdgeSkelet}
+import core.edges.EdgeSkelet.{DirectEdgeSkelet, DirectableEdgeSkelet, MultiEdgeSkelet, MultiableEdgeSkelet, NonDirectEdgeSkelet, NonMultiEdgeSkelet}
 import core.vertex.Vertex
 
 sealed trait Edge[+I, +E, +O]
   extends EdgeSkelet[I, E, O]
-    with EdgeSkeletType
     with MultiableEdgeSkelet
     with DirectableEdgeSkelet
     with TimeProcess
@@ -14,7 +13,7 @@ object Edge {
 
   def inferVertices[I](edges: Seq[Edge[I, _, I]]): Seq[Vertex[I]] = {
     val (inV, outV) = inferVertices2Type(edges)
-    inV ++ outV
+    (inV ++ outV).distinct
   }
 
   def inferVertices2Type[I, O](edges: Seq[Edge[I, _, O]]): (Seq[Vertex[I]], Seq[Vertex[O]]) = {
@@ -33,9 +32,9 @@ object Edge {
     leftDouble.distinct -> rightDouble.distinct
   }
 
-  trait Edge1Type[+V, +E] extends EdgeSkelet1Type[V, E]
+  trait Edge1Type[+V, +E] extends Edge[V, E, V]
 
-  trait Edge2Type[+I, +E, +O] extends EdgeSkelet2Type[I, E, O]
+  trait Edge2Type[+I, +E, +O] extends Edge[I, E, O]
 
 
   trait DirectEdgeTrait[+V, +E] extends Edge1Type[V, E] with NonMultiEdgeSkelet[V, E, V] with DirectEdgeSkelet[V, E, V]
