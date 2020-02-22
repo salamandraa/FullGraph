@@ -12,18 +12,17 @@ trait Graph[V] {
 
   def neighbours(a: V): Set[V]
 
-
-  def dfs(start: V, end: V): Option[List[V]] = {
+  private def dfs(start: V, finishCondition: V => Boolean, resultIfAllVisits: List[V] => Option[List[V]]): Option[List[V]] = {
     @tailrec
     def dfs(needToVisit: List[V], visited: List[V]): Option[List[V]] = {
       needToVisit match {
-        case Nil => None
+        case Nil => resultIfAllVisits(visited.reverse)
         case nowVisit :: tailToVisit =>
           if (visited.contains(nowVisit)) {
             dfs(tailToVisit, visited)
           } else {
             val visitedNext = nowVisit :: visited
-            if (nowVisit == end) {
+            if (finishCondition(nowVisit)) {
               Some(visitedNext.reverse)
             }
             else {
@@ -37,6 +36,9 @@ trait Graph[V] {
     dfs(List(start), Nil)
   }
 
+  def dfs(start: V, end: V): Option[List[V]] = dfs(start, v => v == end, _ => None)
+
+  def traversalDfs(start: V): Option[List[V]] = dfs(start, _ => false, x => if (x.isEmpty) None else Some(x))
 
   def dfsRec(start: V, end: V): Option[List[V]] = {
 
@@ -61,6 +63,30 @@ trait Graph[V] {
     }
 
     dfsRec(start, Nil)
+  }
+
+  def traversalDfsRec(start: V): Option[List[V]] = {
+    def traversalDfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
+      if (visited.contains(nowVisit)) {
+        Some(visited)
+      } else {
+
+        val neighboursNow = neighbours(nowVisit)
+        if (neighboursNow.forall(visited.contains)) {
+          Some(nowVisit :: visited)
+        } else {
+          val visitedZero = nowVisit :: visited
+          neighboursNow.foldLeft(Option.empty[List[V]]) {
+            case (result, neighbour) => result match {
+              case None => traversalDfsRec(neighbour, visitedZero)
+              case Some(visitedNow) => traversalDfsRec(neighbour, visitedNow)
+            }
+          }
+        }
+      }
+    }
+
+    traversalDfsRec(start, Nil).map(_.reverse)
   }
 
   def bfs(start: V, end: V): Option[List[V]] = {
