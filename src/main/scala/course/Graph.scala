@@ -26,7 +26,7 @@ trait Graph[V] {
               Some(visitedNext.reverse)
             }
             else {
-              val needToVisitNext = neighbours(nowVisit).toList ++ needToVisit
+              val needToVisitNext = neighbours(nowVisit).filterNot(visited.contains).toList ++ needToVisit
               dfs(needToVisitNext, visitedNext)
             }
           }
@@ -38,7 +38,7 @@ trait Graph[V] {
 
   def dfs(start: V, end: V): Option[List[V]] = dfs(start, v => v == end, _ => None)
 
-  def traversalDfs(start: V): Option[List[V]] = dfs(start, _ => false, x => if (x.isEmpty) None else Some(x))
+  def traversalDfs(start: V): List[V] = dfs(start, _ => false, x => if (x.isEmpty) None else Some(x)).getOrElse(Nil)
 
   private def dfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => Option[List[V]], isFirstResult: Boolean): Option[List[V]] = {
 
@@ -66,7 +66,7 @@ trait Graph[V] {
 
   def dfsRec(start: V, end: V): Option[List[V]] = dfsRec(start, v => v == end, _ => None, isFirstResult = true)
 
-  def traversalDfsRec(start: V): Option[List[V]] = dfsRec(start, _ => false, x => if (x.isEmpty) None else Some(x), isFirstResult = false)
+  def traversalDfsRec(start: V): List[V] = dfsRec(start, _ => false, x => if (x.isEmpty) None else Some(x), isFirstResult = false).getOrElse(Nil)
 
 
   private def bfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => Option[List[V]], isFirstResult: Boolean): Option[List[V]] = {
@@ -77,7 +77,7 @@ trait Graph[V] {
       } else {
         val visitedNext = nowVisit :: visited
         if (finishCondition(nowVisit)) {
-          Some(nowVisit :: visited)
+          Some(visitedNext)
         } else {
           val listVisited = neighbours(nowVisit).map(neighbour => bfsRec(neighbour, visitedNext))
           if (isFirstResult) {
@@ -96,7 +96,7 @@ trait Graph[V] {
 
   def bfsRec(start: V, end: V): Option[List[V]] = bfsRec(start, v => v == end, _ => None, isFirstResult = true)
 
-  def traversalBfsRec(start: V): Option[List[V]] = bfsRec(start, _ => false, x => if (x.isEmpty) None else Some(x), isFirstResult = false)
+  def traversalBfsRec(start: V): List[V] = bfsRec(start, _ => false, x => if (x.isEmpty) None else Some(x), isFirstResult = false).getOrElse(Nil)
 
 }
 
