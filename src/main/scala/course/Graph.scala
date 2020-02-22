@@ -12,18 +12,20 @@ trait Graph[V] {
 
   def neighbours(a: V): Set[V]
 
-  private def dfs(start: V, finishCondition: V => Boolean, transformAllVisited: List[V] => Option[List[V]]): Option[List[V]] = {
+  private def toOptList[T](list: List[T]): Option[List[T]] = if (list.isEmpty) None else Some(list)
+
+  private def dfs(start: V, finishCondition: V => Boolean, transformIfNotFound: List[V] => List[V]): List[V] = {
     @tailrec
-    def dfs(needToVisit: List[V], visited: List[V]): Option[List[V]] = {
+    def dfs(needToVisit: List[V], visited: List[V]): List[V] = {
       needToVisit match {
-        case Nil => transformAllVisited(visited.reverse)
+        case Nil => transformIfNotFound(visited)
         case nowVisit :: tailToVisit =>
           if (visited.contains(nowVisit)) {
             dfs(tailToVisit, visited)
           } else {
             val visitedNext = nowVisit :: visited
             if (finishCondition(nowVisit)) {
-              Some(visitedNext.reverse)
+              visitedNext
             }
             else {
               val needToVisitNext = neighbours(nowVisit).filterNot(visited.contains).toList ++ needToVisit
@@ -33,70 +35,68 @@ trait Graph[V] {
       }
     }
 
-    dfs(List(start), Nil)
+    dfs(List(start), Nil).reverse
   }
 
-  def dfs(start: V, end: V): Option[List[V]] = dfs(start, v => v == end, _ => None)
+  def dfs(start: V, end: V): Option[List[V]] = toOptList(dfs(start, v => v == end, _ => Nil))
 
-  def traversalDfs(start: V): List[V] = dfs(start, _ => false, x => if (x.isEmpty) None else Some(x)).getOrElse(Nil)
+  def traversalDfs(start: V): List[V] = dfs(start, _ => false, list => list)
 
-  private def dfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => Option[List[V]], isFirstResult: Boolean): Option[List[V]] = {
+  private def dfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => List[V], isFirstResult: Boolean): List[V] = {
 
-    def dfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
-      if (visited.contains(nowVisit)) {
+    def dfsRec(start: V, visited: List[V]): List[V] = {
+      if (visited.contains(start)) {
         transformIfVisit(visited)
       } else {
-        val visitedZero = nowVisit :: visited
-        if (finishCondition(nowVisit)) {
-          Some(visitedZero)
+        val visitedZero = start :: visited
+        if (finishCondition(start)) {
+          visitedZero
         } else {
-          neighbours(nowVisit).foldLeft(Option.empty[List[V]]) {
+          neighbours(start).foldLeft(List.empty[V]) {
             case (result, neighbour) => result match {
-              case None => dfsRec(neighbour, visitedZero)
-              case Some(visitedNow) => if (isFirstResult) Some(visitedNow) else dfsRec(neighbour, visitedNow)
+              case Nil => dfsRec(neighbour, visitedZero)
+              case visitedNow => if (isFirstResult) visitedNow else dfsRec(neighbour, visitedNow)
             }
           }
         }
       }
-
     }
 
-    dfsRec(start, Nil).map(_.reverse)
+    dfsRec(start, Nil).reverse
   }
 
-  def dfsRec(start: V, end: V): Option[List[V]] = dfsRec(start, v => v == end, _ => None, isFirstResult = true)
+  def dfsRec(start: V, end: V): Option[List[V]] = toOptList(dfsRec(start, v => v == end, _ => Nil, isFirstResult = true))
 
-  def traversalDfsRec(start: V): List[V] = dfsRec(start, _ => false, x => if (x.isEmpty) None else Some(x), isFirstResult = false).getOrElse(Nil)
+  def traversalDfsRec(start: V): List[V] = dfsRec(start, _ => false, list => list, isFirstResult = false)
 
 
-  private def bfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => Option[List[V]], isFirstResult: Boolean): Option[List[V]] = {
+  private def bfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => List[V], isFirstResult: Boolean): List[V] = {
 
-    def bfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
+    def bfsRec(nowVisit: V, visited: List[V]): List[V] = {
       if (visited.contains(nowVisit)) {
         transformIfVisit(visited)
       } else {
         val visitedNext = nowVisit :: visited
         if (finishCondition(nowVisit)) {
-          Some(visitedNext)
+          visitedNext
         } else {
           val listVisited = neighbours(nowVisit).map(neighbour => bfsRec(neighbour, visitedNext))
           if (isFirstResult) {
-            listVisited.find(_.isDefined).flatten
+            listVisited.find(_.nonEmpty).getOrElse(Nil)
           } else {
-            val result = listVisited.collect { case Some(x) => x }.reduce(_ ++ _) // todo refactor clever merge _ ++ _
-            if (result.isEmpty) None else Some(result)
+            listVisited.reduce(_ ++ _) // todo refactor clever merge _ ++ _
           }
         }
       }
 
     }
 
-    bfsRec(start, Nil).map(_.reverse)
+    bfsRec(start, Nil).reverse
   }
 
-  def bfsRec(start: V, end: V): Option[List[V]] = bfsRec(start, v => v == end, _ => None, isFirstResult = true)
+  def bfsRec(start: V, end: V): Option[List[V]] = toOptList(bfsRec(start, v => v == end, _ => Nil, isFirstResult = true))
 
-  def traversalBfsRec(start: V): List[V] = bfsRec(start, _ => false, x => if (x.isEmpty) None else Some(x), isFirstResult = false).getOrElse(Nil)
+  def traversalBfsRec(start: V): List[V] = bfsRec(start, _ => false, list => list, isFirstResult = false)
 
 }
 
