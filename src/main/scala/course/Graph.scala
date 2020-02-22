@@ -12,11 +12,11 @@ trait Graph[V] {
 
   def neighbours(a: V): Set[V]
 
-  private def dfs(start: V, finishCondition: V => Boolean, resultIfAllVisits: List[V] => Option[List[V]]): Option[List[V]] = {
+  private def dfs(start: V, finishCondition: V => Boolean, transformAllVisited: List[V] => Option[List[V]]): Option[List[V]] = {
     @tailrec
     def dfs(needToVisit: List[V], visited: List[V]): Option[List[V]] = {
       needToVisit match {
-        case Nil => resultIfAllVisits(visited.reverse)
+        case Nil => transformAllVisited(visited.reverse)
         case nowVisit :: tailToVisit =>
           if (visited.contains(nowVisit)) {
             dfs(tailToVisit, visited)
@@ -40,13 +40,35 @@ trait Graph[V] {
 
   def traversalDfs(start: V): Option[List[V]] = dfs(start, _ => false, x => if (x.isEmpty) None else Some(x))
 
+  private def dfsRec(start: V, finishCondition: V => Boolean, transformAllVisited: List[V] => Option[List[V]], merge: (V, List[V]) => Option[List[V]]): Option[List[V]] = {
+
+    def dfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
+      if (visited.contains(nowVisit)) {
+        transformAllVisited(visited)
+      } else if (finishCondition(nowVisit)) {
+        Some(nowVisit :: visited)
+      } else {
+        val visitedZero = nowVisit :: visited
+        neighbours(nowVisit).foldLeft(Option.empty[List[V]]) {
+          case (result, neighbour) => result match {
+            case None => dfsRec(neighbour, visitedZero)
+            case Some(visitedNow) => merge(neighbour, visitedNow)
+          }
+        }
+      }
+
+    }
+
+    dfsRec(start, Nil).map(_.reverse)
+  }
+
   def dfsRec(start: V, end: V): Option[List[V]] = {
 
     def dfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
       if (visited.contains(nowVisit)) {
         None
       } else if (nowVisit == end) {
-        Some((nowVisit :: visited).reverse)
+        Some(nowVisit :: visited)
       } else {
         val visitedZero = nowVisit :: visited
         neighbours(nowVisit).foldLeft(Option.empty[List[V]]) {
@@ -59,7 +81,7 @@ trait Graph[V] {
 
     }
 
-    dfsRec(start, Nil)
+    dfsRec(start, Nil).map(_.reverse)
   }
 
   def traversalDfsRec(start: V): Option[List[V]] = {
