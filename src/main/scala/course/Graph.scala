@@ -49,13 +49,38 @@ trait Graph[V] {
           None
         } else {
           val visitedNext = nowVisit :: visited
-          neighbours(nowVisit).map(neighbour => dfsRec(neighbour, visitedNext)).find(_.isDefined).flatten
+          neighbours(nowVisit).foldLeft(Option.empty[List[V]]) {
+            case (result, neighbour) => result match {
+              case None => dfsRec(neighbour, visitedNext)
+              case some => some
+            }
+          }
         }
       }
 
     }
 
     dfsRec(start, Nil)
+  }
+
+  def bfs(start: V, end: V): Option[List[V]] = {
+
+    def bfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
+      if (nowVisit == end) {
+        Some((nowVisit :: visited).reverse)
+      } else {
+
+        if (visited.contains(nowVisit)) {
+          None
+        } else {
+          val visitedNext = nowVisit :: visited
+          neighbours(nowVisit).map(neighbour => bfsRec(neighbour, visitedNext)).find(_.isDefined).flatten
+        }
+      }
+
+    }
+
+    bfsRec(start, Nil)
   }
 
 }

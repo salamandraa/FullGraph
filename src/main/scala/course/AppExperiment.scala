@@ -14,6 +14,8 @@ object AppExperiment extends App {
 
   println(graph.dfs("Rome", "Paris"))
   println(graph.dfsRec("Rome", "Paris"))
+  println(graph.bfs("Rome", "Paris"))
   println(graph.dfs("London", "Rome"))
   println(graph.dfsRec("London", "Rome"))
+  println(graph.bfs("London", "Rome"))
 }
