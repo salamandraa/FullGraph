@@ -1,4 +1,4 @@
-package core.edges
+package my.core.edges
 
 trait TimeProcess {
   def isForward: Option[Boolean]

@@ -1,7 +1,7 @@
-package core.graph
+package my.core.graph
 
-import core.edges.Edge
-import core.vertex.Vertex
+import my.core.edges.Edge
+import my.core.vertex.Vertex
 
 case class Graph[+V, +E](edges: Seq[Edge[V, E, V]]) {
 

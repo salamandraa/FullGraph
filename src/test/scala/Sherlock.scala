@@ -1,5 +1,5 @@
-import core.edges.EdgedImpl.DirectEdge
-import core.graph.Graph
+import my.core.edges.EdgedImpl.DirectEdge
+import my.core.graph.Graph
 
 object Sherlock extends App {
 

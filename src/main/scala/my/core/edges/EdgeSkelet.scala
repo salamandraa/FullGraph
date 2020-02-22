@@ -1,6 +1,6 @@
-package core.edges
+package my.core.edges
 
-import core.vertex.Vertex
+import my.core.vertex.Vertex
 
 
 trait EdgeSkelet[+I, +E, +O]

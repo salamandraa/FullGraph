@@ -1,7 +1,7 @@
-package core.edges
+package my.core.edges
 
-import core.edges.EdgeSkelet.{DirectEdgeSkelet, DirectableEdgeSkelet, MultiEdgeSkelet, MultiableEdgeSkelet, NonDirectEdgeSkelet, NonMultiEdgeSkelet}
-import core.vertex.Vertex
+import my.core.edges.EdgeSkelet.{DirectEdgeSkelet, DirectableEdgeSkelet, MultiEdgeSkelet, MultiableEdgeSkelet, NonDirectEdgeSkelet, NonMultiEdgeSkelet}
+import my.core.vertex.Vertex
 
 sealed trait Edge[+I, +E, +O]
   extends EdgeSkelet[I, E, O]

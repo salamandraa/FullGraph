@@ -1,3 +1,3 @@
-package core.vertex
+package my.core.vertex
 
 case class Vertex[+V](value: V)

@@ -1,8 +1,8 @@
-package core.edges
+package my.core.edges
 
 
-import core.edges.Edge._
-import core.edges.TimeProcess.InvariantTimeProcess
+import my.core.edges.Edge._
+import my.core.edges.TimeProcess.InvariantTimeProcess
 
 
 object EdgedImpl {
