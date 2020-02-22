@@ -43,19 +43,16 @@ trait Graph[V] {
   def dfsRec(start: V, end: V): Option[List[V]] = {
 
     def dfsRec(nowVisit: V, visited: List[V]): Option[List[V]] = {
-      if (nowVisit == end) {
+      if (visited.contains(nowVisit)) {
+        None
+      } else if (nowVisit == end) {
         Some((nowVisit :: visited).reverse)
       } else {
-
-        if (visited.contains(nowVisit)) {
-          None
-        } else {
-          val visitedNext = nowVisit :: visited
-          neighbours(nowVisit).foldLeft(Option.empty[List[V]]) {
-            case (result, neighbour) => result match {
-              case None => dfsRec(neighbour, visitedNext)
-              case some => some
-            }
+        val visitedZero = nowVisit :: visited
+        neighbours(nowVisit).foldLeft(Option.empty[List[V]]) {
+          case (result, neighbour) => result match {
+            case None => dfsRec(neighbour, visitedZero)
+            case some => some
           }
         }
       }
@@ -70,17 +67,12 @@ trait Graph[V] {
       if (visited.contains(nowVisit)) {
         Some(visited)
       } else {
-
         val neighboursNow = neighbours(nowVisit)
-        if (neighboursNow.forall(visited.contains)) {
-          Some(nowVisit :: visited)
-        } else {
-          val visitedZero = nowVisit :: visited
-          neighboursNow.foldLeft(Option.empty[List[V]]) {
-            case (result, neighbour) => result match {
-              case None => traversalDfsRec(neighbour, visitedZero)
-              case Some(visitedNow) => traversalDfsRec(neighbour, visitedNow)
-            }
+        val visitedZero = nowVisit :: visited
+        neighboursNow.foldLeft(Option.empty[List[V]]) {
+          case (result, neighbour) => result match {
+            case None => traversalDfsRec(neighbour, visitedZero)
+            case Some(visitedNow) => traversalDfsRec(neighbour, visitedNow)
           }
         }
       }
