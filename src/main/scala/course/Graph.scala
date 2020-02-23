@@ -42,7 +42,7 @@ trait Graph[V] {
 
   def traversalDfs(start: V): List[V] = dfs(start, _ => false, list => list)
 
-  private def traversalDfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => List[V], isFirstResult: Boolean): List[V] = {
+  private def dfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => List[V], isFirstResult: Boolean): List[V] = {
 
     def dfsRec(start: V, visited: List[V]): List[V] = {
       if (visited.contains(start)) {
@@ -51,43 +51,28 @@ trait Graph[V] {
         val visitedZero = start :: visited
         if (finishCondition(start)) {
           visitedZero
-        } else {
-          neighbours(start).foldLeft(visitedZero) {
-            case (result, neighbour) => dfsRec(neighbour, result)
-          }
-        }
-      }
-    }
-
-    dfsRec(start, Nil).reverse
-  }
-
-  private def dfsRec(start: V, finishCondition: V => Boolean): List[V] = {
-
-    def dfsRec(start: V, visited: List[V]): List[V] = {
-      if (visited.contains(start)) {
-        Nil
-      } else {
-        val visitedZero = start :: visited
-        if (finishCondition(start)) {
-          visitedZero
-        } else {
+        } else if (isFirstResult) {
           neighbours(start).foldLeft(List.empty[V]) {
             case (result, neighbour) => result match {
               case Nil => dfsRec(neighbour, visitedZero)
               case visitedNow => visitedNow
             }
           }
+        } else {
+          neighbours(start).foldLeft(visitedZero) { //why????
+            case (result, neighbour) => dfsRec(neighbour, result)
+          }
         }
       }
     }
 
+
     dfsRec(start, Nil).reverse
   }
 
-  def dfsRec(start: V, end: V): Option[List[V]] =  toOptList(dfsRec(start,v => v == end))// toOptList(traversalDfsRec(start, v => v == end, _ => Nil, isFirstResult = true))
+  def dfsRec(start: V, end: V): Option[List[V]] = toOptList(dfsRec(start, v => v == end, _ => Nil, isFirstResult = true))
 
-  def traversalDfsRec(start: V): List[V] = traversalDfsRec(start, _ => false, list => list, isFirstResult = false)//todo not work
+  def traversalDfsRec(start: V): List[V] = dfsRec(start, _ => false, list => list, isFirstResult = false)
 
 
   private def bfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => List[V], isFirstResult: Boolean): List[V] = {
