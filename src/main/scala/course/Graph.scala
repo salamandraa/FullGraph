@@ -67,7 +67,7 @@ trait Graph[V] {
 
   def dfsRec(start: V, end: V): Option[List[V]] = toOptList(dfsRec(start, v => v == end, _ => Nil, isFirstResult = true))
 
-  def traversalDfsRec(start: V): List[V] = dfsRec(start, _ => false, list => list, isFirstResult = false)
+  def traversalDfsRec(start: V): List[V] = dfsRec(start, _ => false, list => list, isFirstResult = false)//todo not work
 
 
   private def bfsRec(start: V, finishCondition: V => Boolean, transformIfVisit: List[V] => List[V], isFirstResult: Boolean): List[V] = {
@@ -84,7 +84,7 @@ trait Graph[V] {
           if (isFirstResult) {
             listVisited.find(_.nonEmpty).getOrElse(Nil)
           } else {
-            listVisited.reduce(_ ++ _) // todo refactor clever merge _ ++ _
+            listVisited.foldLeft(List.empty[V])(_ ++ _) // todo refactor clever merge _ ++ _
           }
         }
       }
@@ -96,7 +96,7 @@ trait Graph[V] {
 
   def bfsRec(start: V, end: V): Option[List[V]] = toOptList(bfsRec(start, v => v == end, _ => Nil, isFirstResult = true))
 
-  def traversalBfsRec(start: V): List[V] = bfsRec(start, _ => false, list => list, isFirstResult = false)
+  def traversalBfsRec(start: V): List[V] = bfsRec(start, _ => false, list => list, isFirstResult = false) //todo not work
 
 }
 
